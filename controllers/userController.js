@@ -14,12 +14,22 @@ module.exports = {
   async getSingleUser(req, res) {
     try {
       const user = await User.findOne({ _id: req.params.userId });
+      const thoughts = await Thought.find({ username: user.username });
+      const friends = [];
+      for (let i = 0; i < user.friends.length; i++) {
+        const friend = await User.findOne({ _id: user.friends[i] });
+        friends.push(friend);
+      }
 
       if (!user) {
         return res.status(404).json({ message: "No users found" });
       }
 
-      res.status(200).json(user);
+      res.status(200).json({
+        user: user,
+        thoughts: thoughts,
+        friends: friends,
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
