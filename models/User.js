@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { emailValidator } = require("../utils/helpers");
 
 const userSchema = new Schema(
   {
@@ -8,12 +9,12 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
     },
-    // needs validator
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+      validate: emailValidator,
     },
     thoughts: [],
     friends: [],

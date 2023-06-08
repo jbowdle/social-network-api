@@ -40,9 +40,6 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-
-  // todo:
-  // put and delete by id
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(

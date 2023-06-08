@@ -1,4 +1,6 @@
 const { Schema, model } = require("mongoose");
+const { formatDate } = require("../utils/helpers");
+
 const thoughtSchema = new Schema(
   {
     thoughtText: {
@@ -10,7 +12,7 @@ const thoughtSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      // needs getter method to format timestamp
+      get: formatDate,
     },
     username: {
       type: String,
@@ -26,14 +28,15 @@ const thoughtSchema = new Schema(
   {
     toJSON: {
       virtuals: true,
+      getters: true,
     },
     id: false,
   }
 );
 
-// thoughtSchema.virtual("reactionCount").get(function() {
-//   return this.reactions.length;
-// });
+thoughtSchema.virtual("reactionCount").get(function() {
+  return this.reactions.length;
+});
 
 const Thought = model("thought", thoughtSchema);
 
