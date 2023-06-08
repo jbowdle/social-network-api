@@ -15,8 +15,10 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
     },
-    // needs thoughts and friends references
+    thoughts: [],
+    friends: [],
   },
+  // needs friendCount virtual
 );
 
 const User = model("user", userSchema);
