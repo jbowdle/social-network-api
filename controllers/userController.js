@@ -1,4 +1,4 @@
-const { User, Thought, Reaction, } = require("../models");
+const { User, Thought } = require("../models");
 
 module.exports = {
   async getUsers(req, res) {
@@ -66,14 +66,20 @@ module.exports = {
     try {
       const user = await User.findOneAndRemove({ _id: req.params.userId });
       await Thought.deleteMany({ username: user.username });
+      // The user reactions are kept but their username is removed
+      await Thought.updateMany(
+        { "reactions.username": user.username },
+        {
+          $set: {
+            // The '$' below is a positional operator. It refers to the index of the matched reaction found above
+            "reactions.$.username": "[deleted]"
+          }
+        },
+        { new: true },
+      );
       await User.updateMany(
         { friends: req.params.userId },
         { $pull: { friends: req.params.userId }},
-        { new: true },
-      );
-      await Reaction.updateMany(
-        { username: user.username },
-        { $set: { username: "[Deleted]" }},
         { new: true },
       );
 

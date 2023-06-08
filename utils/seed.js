@@ -1,5 +1,5 @@
 const connection = require("../config/connection");
-const { User, Thought, Reaction } = require("../models");
+const { User, Thought } = require("../models");
 
 connection.on("error", (err) => err);
 
@@ -8,7 +8,6 @@ connection.once("open", async () => {
 
   await User.deleteMany({});
   await Thought.deleteMany({});
-  await Reaction.deleteMany({});
 
   await User.collection.insertMany([
     {
