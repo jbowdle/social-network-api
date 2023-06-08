@@ -9,7 +9,8 @@ connection.once("open", async () => {
   await User.deleteMany({});
 
   await User.collection.insertOne({
-    test: "test",
+    username: "test",
+    email: "testemail@email.com",
   });
 
   console.table(User);

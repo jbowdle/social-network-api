@@ -2,9 +2,17 @@ const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema(
   {
-    test: {
+    // needs validators
+    username: {
       type: String,
+      required: true,
     },
+    // needs validators
+    email: {
+      type: String,
+      required: true,
+    },
+    // missing thoughts and friends references
   },
 );
 
