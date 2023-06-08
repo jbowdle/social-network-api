@@ -2,17 +2,20 @@ const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema(
   {
-    // needs validators
     username: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
     },
-    // needs validators
+    // needs validator
     email: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
     },
-    // missing thoughts and friends references
+    // needs thoughts and friends references
   },
 );
 

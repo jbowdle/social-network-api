@@ -8,10 +8,20 @@ connection.once("open", async () => {
 
   await User.deleteMany({});
 
-  await User.collection.insertOne({
-    username: "test",
-    email: "testemail@email.com",
-  });
+  await User.collection.insertMany([
+    {
+      username: "test",
+      email: "testemail@email.com",
+    },
+    {
+      username: "test2",
+      email: "test2email@email.com",
+    },
+    {
+      username: "test3",
+      email: "test3email@email.com",
+    },
+  ]);
 
   console.table(User);
   console.info("seeding complete");
