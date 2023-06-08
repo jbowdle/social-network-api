@@ -43,7 +43,44 @@ module.exports = {
 
   // todo:
   // put and delete by id
-  // delete reactions
+  async updateThought(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId},
+        { $set: req.body },
+        { runValidators: true, new: true }
+      );
+      
+      if (!thought) {
+        return res.status(404).json({ message: "No thought found" });
+      }
+
+      res.status(200).json(thought);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+  async deleteThought(req, res) {
+    try {
+      const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
+      
+      if (!thought) {
+        return res.status(404).json({ message: "No thought found" });
+      }
+
+      const user = await User.findOneAndUpdate(
+        { thoughts: req.params.thoughtId },
+        { $pull: { thoughts: req.params.thoughtId }},
+        { new: true }
+      )
+
+      res.status(200).json({ message: "Thought deleted" });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
   async createReaction(req, res) {
     try {
       const reaction = await Reaction.create(req.body);
@@ -58,6 +95,28 @@ module.exports = {
       }
 
       res.status(200).json(reaction);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+  async deleteReaction(req, res) {
+    try {
+      const reaction = await Reaction.findOneAndDelete(req.params.reactionId);
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: req.params.reactionId } },
+        { new: true }
+      );
+      
+      if (!reaction) {
+        return res.status(404).json({ message: "No reaction found" });
+      }
+      if (!thought) {
+        return res.status(404).json({ message: "No thought found" });
+      }
+
+      res.status(200).json({ message: "Reaction deleted" });
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
