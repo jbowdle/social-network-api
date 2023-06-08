@@ -1,5 +1,5 @@
 const connection = require("../config/connection");
-const { User } = require("../models");
+const { User, Thought, Reaction } = require("../models");
 
 connection.on("error", (err) => err);
 
@@ -7,19 +7,21 @@ connection.once("open", async () => {
   console.log("connected");
 
   await User.deleteMany({});
+  await Thought.deleteMany({});
+  await Reaction.deleteMany({});
 
   await User.collection.insertMany([
     {
-      username: "test",
-      email: "testemail@email.com",
+      username: "frodo",
+      email: "hairyfeet@email.com",
     },
     {
-      username: "test2",
-      email: "test2email@email.com",
+      username: "samwise",
+      email: "rabbitstew@email.com",
     },
     {
-      username: "test3",
-      email: "test3email@email.com",
+      username: "gandalf",
+      email: "mithrandir@email.com",
     },
   ]);
 

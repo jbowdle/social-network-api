@@ -14,8 +14,21 @@ module.exports = {
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({ _id: req.params.thoughtId });
+
+      if (!thought) {
+        return res.status(404).json({ message: "No thought found" });
+      }
+
+      const reactions = [];
+      for (let i = 0; i < thought.reactions.length; i++) {
+        const reaction = await Reaction.find({ _id: thought.reactions[i] });
+        reactions.push(reaction);
+      }
       
-      res.status(200).json(thought);
+      res.status(200).json({
+        thought: thought,
+        reactions: reactions,
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -61,7 +74,7 @@ module.exports = {
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
-      
+
       if (!thought) {
         return res.status(404).json({ message: "No thought found" });
       }

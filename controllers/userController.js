@@ -1,4 +1,4 @@
-const { User, Thought, } = require("../models");
+const { User, Thought, Reaction, } = require("../models");
 
 module.exports = {
   async getUsers(req, res) {
@@ -70,7 +70,12 @@ module.exports = {
         { friends: req.params.userId },
         { $pull: { friends: req.params.userId }},
         { new: true },
-      )
+      );
+      await Reaction.updateMany(
+        { username: user.username },
+        { $set: { username: "[Deleted]" }},
+        { new: true },
+      );
 
       if (!user) {
         return res.status(404).json({ message: "No users found" });
