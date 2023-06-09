@@ -14,8 +14,11 @@ const userSchema = new Schema(
       required: true,
       unique: true,
       trim: true,
+      // email must pass this regex: /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
       validate: emailValidator,
     },
+    // thoughts and friends only holds the _ids of the thoughts and friends. Extra querying is needed to
+    // obtain their full documents
     thoughts: [],
     friends: [],
   },
@@ -27,6 +30,7 @@ const userSchema = new Schema(
   }
 );
 
+// stores the number of friends a user has
 userSchema.virtual("friendCount").get(function() {
   return this.friends.length;
 });

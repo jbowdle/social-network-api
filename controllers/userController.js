@@ -1,6 +1,7 @@
 const { User, Thought } = require("../models");
 
 module.exports = {
+  // get api/users, returns all users
   async getUsers(req, res) {
     try {
       const users = await User.find();
@@ -11,11 +12,18 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // get api/users/:userId
   async getSingleUser(req, res) {
     try {
+      // finds matching user
       const user = await User.findOne({ _id: req.params.userId });
+
+      // user only contains _id for thoughts and friends, extra queries are needed to get them to display
+      // finds all associated thoughts using user variable
       const thoughts = await Thought.find({ username: user.username });
+
       const friends = [];
+      // finds friends from user's friend array and pushes them to the above array
       for (let i = 0; i < user.friends.length; i++) {
         const friend = await User.findOne({ _id: user.friends[i] });
         friends.push(friend);
@@ -25,6 +33,7 @@ module.exports = {
         return res.status(404).json({ message: "No users found" });
       }
 
+      // returns user data along with a populated thoughts list and populated friends list
       res.status(200).json({
         user: user,
         thoughts: thoughts,
@@ -35,6 +44,8 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // post api/users
+  // requires username and valid email
   async createUser(req, res) {
     try {
       const user = await User.create(req.body);
@@ -44,6 +55,8 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // put api/users/:userId
+  // can take email or username
   async updateUser(req, res) {
     try {
       const user = await User.findOneAndUpdate(
@@ -62,9 +75,11 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // delete api/users/:userId
   async deleteUser(req, res) {
     try {
       const user = await User.findOneAndRemove({ _id: req.params.userId });
+      // deletes all thoughts that the user created
       await Thought.deleteMany({ username: user.username });
       // The user reactions are kept but their username is removed
       await Thought.updateMany(
@@ -77,6 +92,7 @@ module.exports = {
         },
         { new: true },
       );
+      // removes deleted user from other users' friend lists
       await User.updateMany(
         { friends: req.params.userId },
         { $pull: { friends: req.params.userId }},
@@ -93,8 +109,10 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // post api/users/:userId/friends/:friendId
   async addFriend(req, res) {
     try {
+      // adds friend to user friend list
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
         { $addToSet: {friends: req.params.friendId} },
@@ -115,8 +133,10 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  // delete api/users/:userId/friends/:friendId
   async deleteFriend(req, res) {
     try {
+      // removes friend
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
         { $pull: {friends: req.params.friendId} },
